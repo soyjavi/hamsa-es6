@@ -42,10 +42,12 @@ User.findAndModify({
   upsert: true
 })
 
-
 console.log('findOne', User.findOne());
 console.log('findOne', User.findOne({username: 'soyjavi'}));
 // console.log('find', User.find({query: {id: 4}}));
 
 console.log('find', User.find());
+
+console.log('fields', u.fields);
+
 

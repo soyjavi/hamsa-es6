@@ -8,7 +8,6 @@ class Hamsa {
 
   static fields = {};
   static events = [];
-  // @names = (field for field of @fields)
   static observers = [];
   static records = {};
 
@@ -140,19 +139,18 @@ class Hamsa {
 
   }
 
-  get age() {
-    return this._age;
+  set fields(values) {
+
   }
 
-  set age(value) {
-    if (value < 0) {
-      console.log('We do not support undead animals');
+  get fields() {
+    const result = {};
+    let fields = Object.keys(this.constructor.fields);
+    for (let i = 0, len = fields.length; i < len; i++) {
+      let field = fields[i];
+      result[field] = this[field];
     }
-    this._age = value;
-  }
-
-  toString() {
-    return '(' + this.x + ', ' + this.y + ')';
+    return result;
   }
 };
 
