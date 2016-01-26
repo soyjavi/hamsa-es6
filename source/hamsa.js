@@ -1,9 +1,4 @@
-import createUID from './uid.js'
-import cast from './cast.js'
-import constructorUpdate from './constructorUpdate.js'
-import existsObserver from './existsObserver.js'
-import sort from './sort.js'
-import unobserve from './unobserve.js'
+import utils from './utils.js'
 
 const DEFAULT_EVENTS = ['add', 'update', 'delete']
 
@@ -50,7 +45,7 @@ class Hamsa {
       for (let field in document.query) {
         let value = document.query[field];
         if (exists) {
-          if (cast(record[field], this.fields[field]) !== value) {
+          if (utils.cast(record[field], this.fields[field]) !== value) {
             exists = false;
           }
         }
@@ -62,7 +57,7 @@ class Hamsa {
 
     if (document.sort != null) {
       let field = Object.keys(document.sort)[0];
-      result = sort(result, field, document.sort[field], this.fields[field].type);
+      result = utils.sort(result, field, document.sort[field], this.fields[field].type);
     }
     if (document.limit != null) {
       result = result.slice(0, document.limit);
@@ -114,7 +109,7 @@ class Hamsa {
   @return {array}    Observers availables.
   */
   static unobserve(callback) {
-    this.observers = unobserve(this, callback);
+    this.observers = utils.unobserve(this, callback);
   };
 
   // -- Instance
@@ -127,7 +122,7 @@ class Hamsa {
   */
   constructor(fields = {}, callback, events = DEFAULT_EVENTS) {
     this.className = this.constructor.name;
-    const uid = createUID();
+    const uid = utils.uid();
     this.uid = uid;
     this.constructor.records[uid] = this;
 
@@ -138,7 +133,7 @@ class Hamsa {
         if (typeof this[field] === 'function') {
           this[field](fields[field] || define['default']);
         } else {
-          this[field] = cast(fields[field], define);
+          this[field] = utils.cast(fields[field], define);
         }
       }
     }
@@ -157,7 +152,7 @@ class Hamsa {
             state = states[i];
             if (state.object.constructor === _this.constructor) {
               if (ref = state.name, indexOf.call(_this.constructor.names, ref) >= 0) {
-                results.push(constructorUpdate(state, _this.constructor));
+                results.push(utils.constructorUpdate(state, _this.constructor));
               } else {
                 results.push(void 0);
               }
@@ -188,7 +183,7 @@ class Hamsa {
   @return {array}    Observers availables for the instance.
   */
   unobserve(callback) {
-    this.observers = unobserve(this, callback);
+    this.observers = utils.unobserve(this, callback);
   }
 
   /*
