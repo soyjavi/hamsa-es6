@@ -1,0 +1,25 @@
+{
+  "name": "hamsa-es6",
+  "version": "0.1.0",
+  "description": "A dead simple, data-binding & observable model.",
+  "homepage": "http://gethamsa.com",
+  "author": {
+    "name": "Javi Jimenez Villar",
+    "mail": "javi.jimenez.villar@gmail.com",
+    "twitter": "@soyjavi",
+    "site": "http://soyjavi.com" },
+  "license": "MIT",
+  "main": "./dist",
+  "devDependencies": {
+    "babel-core": "^6.1.4",
+    "babel-loader": "^6.0.1",
+    "babel-preset-es2015": "^6.1.4",
+    "babel-preset-stage-0": "^6.1.4",
+    "webpack": "^1.9.10",
+    "karma": "*",
+    "karma-jasmine": "*",
+    "karma-phantomjs-launcher": "*" },
+  "scripts": {
+    "start": "webpack --watch"
+  }
+}
