@@ -1,6 +1,9 @@
 import createUID from './uid.js'
 import cast from './cast.js'
+import constructorUpdate from './constructorUpdate.js'
+import existsObserver from './existsObserver.js'
 import sort from './sort.js'
+import unobserve from './unobserve.js'
 
 const DEFAULT_EVENTS = ['add', 'update', 'delete']
 
@@ -11,11 +14,20 @@ class Hamsa {
   static observers = [];
   static records = {};
 
-  // -- Static
+  /*
+  Returns all instances of the Class
+  @method all
+  @return {array}     Array of all repository instances.
+  */
   static all() {
     return this.find();
   };
 
+  /*
+  Destroy all instances of the Class
+  @method destroyAll
+  @return {array}     Empty array of all repository instances.
+  */
   static destroyAll() {
     for (let uid in this.records) {
       delete this.records[uid];
@@ -23,6 +35,12 @@ class Hamsa {
     return this.records;
   };
 
+  /*
+  Returns instances of the defined Hamsa Class
+  @method find
+  @param  {object}  [OPTIONAL] Specifies selection criteria using query operators.
+  @return {array}   Array of Hamsa instances
+  */
   static find(document = {}) {
     let result = [];
 
@@ -53,10 +71,22 @@ class Hamsa {
     return result;
   };
 
+  /*
+  Returns one instance that satisfies the specified query criteria
+  @method findOne
+  @param  {object}  [OPTIONAL] Specifies selection criteria using query operators.
+  @return {object}  Hamsa instance.
+  */
   static findOne(query) {
     return this.find({query: query})[0]
   };
 
+  /*
+  Modifies and returns a single instance
+  @method findAndModify
+  @param  {object}  Document parameter with the embedded document fields.
+  @return {object}  Hamsa instance.
+  */
   static findAndModify(document = {}) {
     let record = this.findOne(document.query);
     if (record) {
@@ -67,13 +97,24 @@ class Hamsa {
     return (record || new this(document.update));
   };
 
+  /*
+  Observe changes in instance repository.
+  @method observe
+  @param  {function}  A function to execute each time the object is changed.
+  @return {array}     Observers availables.
+  */
   static observe(callback, events = DEFAULT_EVENTS) {
     this.events = events;
     // @TODO
   }
 
+  /*
+  Unobserve changes in instance repository.
+  @method unobserve
+  @return {array}    Observers availables.
+  */
   static unobserve(callback) {
-    // @TODO
+    this.observers = unobserve(this, callback);
   };
 
   // -- Instance
@@ -102,8 +143,8 @@ class Hamsa {
       }
     }
 
+    // -- @TODO: ES6 & arrow functions
     this.observers = []
-
     if (callback) {
       this.observe(callback, events);
       this.observers.push(callback);
@@ -116,7 +157,7 @@ class Hamsa {
             state = states[i];
             if (state.object.constructor === _this.constructor) {
               if (ref = state.name, indexOf.call(_this.constructor.names, ref) >= 0) {
-                results.push(_constructorUpdate(state, _this.constructor));
+                results.push(constructorUpdate(state, _this.constructor));
               } else {
                 results.push(void 0);
               }
@@ -131,14 +172,30 @@ class Hamsa {
   }
 
   // -- Instance methods
+  /*
+  Observe changes in a determinate Hamsa instance.
+  @method observe
+  @param  {function}  A function to execute each time the fields change.
+  @return {array}    Observers availables for the instance.
+  */
   observe(callback, events = DEFAULT_EVENTS) {
     // @TODO
   }
 
+  /*
+  Unobserve changes in a determinate Hamsa instance.
+  @method unobserve
+  @return {array}    Observers availables for the instance.
+  */
   unobserve(callback) {
-    // @TODO
+    this.observers = unobserve(this, callback);
   }
 
+  /*
+  Destroy current Hamsa instance
+  @method destroy
+  @return {object}    Current Hamsa instance
+  */
   destroy(trigger = true) {
     if (trigger) {
       let callbacks = this.observers;
@@ -153,6 +210,8 @@ class Hamsa {
     return delete this.constructor.records[this.uid];
   }
 
+  /*
+  */
   get fields() {
     const result = {};
     let fields = Object.keys(this.constructor.fields);
