@@ -69,10 +69,11 @@ class Hamsa {
 
   static observe(callback, events = DEFAULT_EVENTS) {
     this.events = events;
+    // @TODO
   }
 
   static unobserve(callback) {
-
+    // @TODO
   };
 
   // -- Instance
@@ -86,6 +87,7 @@ class Hamsa {
   constructor(fields = {}, callback, events = DEFAULT_EVENTS) {
     this.className = this.constructor.name;
     const uid = createUID();
+    this.uid = uid;
     this.constructor.records[uid] = this;
 
     const ref = this.constructor.fields;
@@ -125,22 +127,30 @@ class Hamsa {
       })(this), ['update']);
     }
 
-
-    console.log(uid, this.constructor.name, this.constructor.records, this);
-
-    // this.x = x;
-    // this.y = y;
-
     return this;
   }
 
   // -- Instance methods
-  observe() {
-
+  observe(callback, events = DEFAULT_EVENTS) {
+    // @TODO
   }
 
-  set fields(values) {
+  unobserve(callback) {
+    // @TODO
+  }
 
+  destroy(trigger = true) {
+    if (trigger) {
+      let callbacks = this.observers;
+      for (let i = 0, len = callbacks.length; i < len; i++) {
+        callbacks[i]({
+          type: 'destroy',
+          name: this.uid,
+          oldValue: this.fields
+        });
+      }
+    }
+    return delete this.constructor.records[this.uid];
   }
 
   get fields() {
