@@ -34,8 +34,18 @@ const utils = {
     return exists;
   },
 
-  sort: () => {
-
+  sort: (items, field, direction, type = String) => {
+    return items.sort(function(a, b) {
+      if (type === Number) {
+        return (b[field] - a[field]) * direction;
+      } else if (a[field] > b[field]) {
+        return -1 * direction;
+      } else if (a[field] < b[field]) {
+        return +1 * direction;
+      } else {
+        return 0;
+      }
+    });
   },
 
   uid: () => {
