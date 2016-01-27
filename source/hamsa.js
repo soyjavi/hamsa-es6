@@ -100,7 +100,31 @@ class Hamsa {
   */
   static observe(callback, events = DEFAULT_EVENTS) {
     this.events = events;
-    // @TODO
+    console.warn('::', this.events);
+    Object.observe(this.records, (states) => {
+      if (utils.existsObserver(this.observers, callback)) {
+        for (let i = 0, len = states.length; i < len; i++) {
+          let state = states[i];
+          let constructor;
+          if (this.records[state.name]) constructor = this.records[state.name].constructor;
+          if (!constructor && state.oldValue) constructor = state.oldValue.constructor;
+          if (constructor === this) {
+            let event = {
+              type: state.type,
+              name: state.name
+            };
+            if (state.type === 'add' || state.type === 'updated') {
+              event.object = this.records[state.name];
+            } else {
+              event.oldValue = state.oldValue;
+            }
+            callback(event);
+          }
+        }
+      }
+    }, this.events);
+    this.observers.push(callback);
+    return this.observers;
   }
 
   /*
@@ -139,7 +163,7 @@ class Hamsa {
     }
 
     // -- @TODO: ES6 & arrow functions
-    this.observers = []
+    this.observers = [];
     if (callback) {
       this.observe(callback, events);
       this.observers.push(callback);
@@ -174,7 +198,21 @@ class Hamsa {
   @return {array}    Observers availables for the instance.
   */
   observe(callback, events = DEFAULT_EVENTS) {
-    // @TODO
+    Object.observe(this, (states) => {
+      if (utils.existsObserver(this.observers, callback)) {
+        const fields = Object.keys(this.constructor.fields);
+        for (let i = 0, len = states.length; i < len; i++) {
+          const state = states[i];
+          if (fields.indexOf(state.name) >= 0) {
+            delete state.object.observer;
+            utils.constructorUpdate(state, this.constructor);
+            callback(state);
+          }
+        }
+      }
+    }, events);
+    this.observers.push(callback)
+    return this.observers;
   }
 
   /*
@@ -196,7 +234,7 @@ class Hamsa {
       let callbacks = this.observers;
       for (let i = 0, len = callbacks.length; i < len; i++) {
         callbacks[i]({
-          type: 'destroy',
+          type: 'delete',
           name: this.uid,
           oldValue: this.fields
         });
