@@ -1,39 +1,30 @@
-const path = require('path');
-var pkg = require('./package.json');
-const webpack = require('webpack');
+const { join } = require('path');
 
+const isDevelop = process.env.NODE_ENV !== 'production';
 
 module.exports = {
-  context: __dirname,
-
-  watch: true,
-
-  resolve: {
-    extensions: ['', '.js', '.json'],
-    modulesDirectories: [
-      'node_modules',
-      path.resolve(__dirname, './node_modules')
-    ]
-  },
-
+  context: join(__dirname, '/src'),
   entry: {
-    // core: './source/hamsa.js',
-    test: './spec/test.js',
+    app: './hamsa.js',
   },
-
   output: {
-    path: './build',
-    filename: pkg.name + '.[name].js'
+    path: join(__dirname, '/dist'),
+    filename: 'index.js',
   },
-
+  devServer: {
+    open: true,
+    contentBase: join(__dirname, '/spec'),
+  },
   module: {
-    loaders: [
+    rules: [
       {
-        test: /(\.js)$/,
-        exclude: /(node_modules)/,
-        loader: 'babel',
-        query: { presets: ['es2015', 'stage-0'] }
-      }
-    ]
-  }
+        test: /\.js$/,
+        use: [{
+          loader: 'babel-loader',
+          options: { presets: ['es2015', 'stage-0'] },
+        }],
+      },
+    ],
+  },
+  devtool: isDevelop ? 'eval-source-map' : 'source-map',
 };
