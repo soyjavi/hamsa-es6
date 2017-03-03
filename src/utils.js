@@ -1,19 +1,18 @@
 const utils = {
 
-  cast: (value, attributes = {type: String}) => {
+  cast: (value, attributes = { type: String }) => {
     if (attributes.type !== Date && attributes.type !== Array) {
-      return attributes.type(value || attributes['default']);
+      return attributes.type(value || attributes.default);
     } else if (attributes.type === Array) {
-      return value || attributes['default'];
-    } else {
-      return value || attributes.type(attributes['default']);
+      return value || attributes.default;
     }
+    return value || attributes.type(attributes.default);
   },
 
   constructorUpdate: (state, className) => {
-    let observers = className.observers;
-    for (let i = 0, len = observers.length; i < len; i++) {
-      let type = state.type;
+    const observers = className.observers;
+    for (let i = 0, len = observers.length; i < len; i += 1) {
+      const type = state.type;
       if (state.type === 'update' && className.events.indexOf(type) >= 0) {
         delete state.object.observer;
         observers[i](state);
@@ -24,7 +23,7 @@ const utils = {
   existsObserver: (observers, callback) => {
     let exists = false;
 
-    for (let i = 0, len = observers.length; i < len; i++) {
+    for (let i = 0, len = observers.length; i < len; i += 1) {
       if (observers[i] === callback) {
         exists = true;
         break;
@@ -34,33 +33,32 @@ const utils = {
     return exists;
   },
 
-  sort: (items, field, direction, type = String) => {
-    return items.sort(function(a, b) {
+  sort: (items, field, direction, type = String) => (
+    items.sort((a, b) => {
       if (type === Number) {
         return (b[field] - a[field]) * direction;
       } else if (a[field] > b[field]) {
         return -1 * direction;
       } else if (a[field] < b[field]) {
         return +1 * direction;
-      } else {
-        return 0;
       }
-    });
-  },
+      return 0;
+    })
+  ),
 
-  uid: () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r, v;
-      r = Math.random() * 16 | 0;
-      v = c === 'x' ? r : r & 3 | 8;
+  uid: () => (
+    'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+      const r = Math.random() * 16 | 0;
+      const v = char === 'x' ? r : (r & 3) | 8;
       return v.toString(16);
-    }).toUpperCase();
-  },
+    }).toUpperCase()
+  ),
 
   unobserve: (instance, callback) => {
     const observers = instance.observers;
-    for (let i = 0, len = observers.length; i < len; i++) {
-      let observe = observers[i];
+
+    for (let i = 0, len = observers.length; i < len; i += 1) {
+      const observe = observers[i];
       if (callback) {
         if (observe === callback) {
           Object.unobserve(instance, observe);
@@ -75,8 +73,7 @@ const utils = {
       instance.observers = [];
     }
     return instance.observers;
-  }
-
+  },
 };
 
 export default utils;
